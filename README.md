@@ -16,7 +16,7 @@ This README documents **Stage 3: Data Preprocessing & Cleaning** — the foundat
 
 ---
 
-##Stage 3 Preprocessing Pipeline
+# Stage 3: Preprocessing Pipeline
 ```
 ┌──────────────────────────────────────┐
 │  Raw Dataset                         │
