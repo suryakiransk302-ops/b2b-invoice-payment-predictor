@@ -296,3 +296,106 @@ y_test_preprocessed.csv   ←   9,168 test labels
 ```
 
 
+
+
+## 🤖 Stage 2 — Model Training & Evaluation
+
+> **Stage Owner:** Model Training
+> **Input from:** Stage 1 (Preprocessing) — `invoices_clean.csv`, `feature_names.pkl`
+> **Output to:** Stage 3 (Deployment/API) — `model.pkl`, `scaler.pkl`, `shap_explainer.pkl`
+
+---
+
+###  Objective
+
+Train, evaluate, and select the best machine learning model to predict whether an invoice payment will be **late (1)** or **on-time (0)** using the pre-processed invoice data delivered by Stage 1.
+
+---
+
+
+
+---
+
+###  Input Files (from Stage 1)
+
+| File | Description |
+|------|-------------|
+| `invoices_clean.csv` | Cleaned and preprocessed invoice dataset (45,839 rows) |
+| `feature_names.pkl` | Approved list of 30 feature columns (no leakage) |
+
+
+### Pipeline Steps
+
+**1. Data Loading**
+- Loaded `invoices_clean.csv` (45,839 invoices)
+- Loaded `feature_names.pkl` → 30 features selected
+- Target variable: `DelayFlag` (1 = Late, 0 = On-Time)
+
+**2. Temporal Train-Test Split**
+- Sorted by `Doc_Date` (chronological order)
+- Train: oldest 80% → 36,671 records (up to 2015-12-11)
+- Test: most recent 20% → 9,168 records
+- ✅ No random shuffle — prevents data leakage
+
+**3. Class Imbalance Handling**
+- Applied SMOTE on training data only
+- Train set after SMOTE: 49,660 samples (balanced classes)
+- ✅ Test set untouched
+
+**4. Models Trained**
+
+| Model | Notes |
+|-------|-------|
+| Logistic Regression | Linear baseline, uses scaled features |
+| Random Forest | 200 trees, max depth 10 |
+| XGBoost | 200 estimators, learning rate 0.05 |
+
+**5. Evaluation Metrics**
+All models evaluated on the held-out test set using: Accuracy, Precision, Recall, F1-Score, ROC-AUC, and Confusion Matrix.
+
+---
+
+###  Results Summary
+
+| Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
+|-------|----------|-----------|--------|----------|---------|
+| Logistic Regression | 0.4638 | 0.7384 | 0.1029 | 0.1807 | 0.7744 |
+| Random Forest | 0.8652 | 0.9732 | 0.7869 | 0.8702 | 0.9179 |
+| **XGBoost ✅** | **0.9443** | **0.9837** | **0.9182** | **0.9498** | **0.9905** |
+
+**🏆 Best Model: XGBoost**
+- ROC-AUC of 0.9905 — near-perfect discrimination
+- Recall of 91.8% — catches 9 out of 10 late payments
+- Precision of 98.4% — almost no false alarms
+
+---
+
+###  SHAP Feature Importance (XGBoost)
+
+Top features driving late payment predictions:
+
+| Rank | Feature | Business Meaning |
+|------|---------|-----------------|
+| 1 | `Weekday_due.1` | Day of week the payment is due |
+| 2 | `order_volume_ratio` | Invoice size vs customer's usual volume |
+| 3 | `cust_hist_avg_overdue` | Customer's average historical overdue days |
+| 4 | `Weekday_clearnum` | Day of week the invoice was cleared |
+| 5 | `Payment_Method_description_enc` | Payment method used by customer |
+
+> **Key insight:** Customer payment history (`cust_hist_avg_overdue`, `cust_hist_late_rate`) and timing features (`Weekday_due.1`, `invoice_dayofweek`) are the strongest predictors of late payment.
+
+---
+
+###  Output Files
+
+| File | Description 
+|------|-------------
+| `models/model.pkl` | Trained XGBoost model 
+| `models/scaler.pkl` | StandardScaler fitted on training data 
+| `models/shap_explainer.pkl` | SHAP explainer for predictions 
+| `results/metrics.json` | All model evaluation metrics
+| `feature_names.pkl` | Feature list 
+
+
+
+
