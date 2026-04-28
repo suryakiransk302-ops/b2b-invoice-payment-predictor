@@ -298,9 +298,9 @@ y_test_preprocessed.csv   ←   9,168 test labels
 
 
 
-## 🤖 Stage 2 — Model Training & Evaluation
+## — Model Training & Evaluation
 
-> **Stage Owner:** Model Training
+
 > **Input from:** Stage 1 (Preprocessing) — `invoices_clean.csv`, `feature_names.pkl`
 > **Output to:** Stage 3 (Deployment/API) — `model.pkl`, `scaler.pkl`, `shap_explainer.pkl`
 
@@ -308,7 +308,7 @@ y_test_preprocessed.csv   ←   9,168 test labels
 
 ###  Objective
 
-Train, evaluate, and select the best machine learning model to predict whether an invoice payment will be **late (1)** or **on-time (0)** using the pre-processed invoice data delivered by Stage 1.
+Train, evaluate, and select the best machine learning model to predict whether an invoice payment will be **late (1)** or **on-time (0)** using the pre-processed invoice data .
 
 ---
 
@@ -316,7 +316,7 @@ Train, evaluate, and select the best machine learning model to predict whether a
 
 ---
 
-###  Input Files (from Stage 1)
+###  Input Files 
 
 | File | Description |
 |------|-------------|
