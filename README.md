@@ -298,7 +298,7 @@ y_test_preprocessed.csv   ←   9,168 test labels
 
 
 
-## — Model Training & Evaluation
+# Model Training & Evaluation
 
 
 > **Input from:** Stage 1 (Preprocessing) — `invoices_clean.csv`, `feature_names.pkl`
